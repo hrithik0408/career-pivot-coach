@@ -148,5 +148,56 @@ Requirements:
 - Proven track record of shipping developer-facing infrastructure, APIs, or complex financial platforms.
 - Exceptional analytical and quantitative problem-solving skills; comfortable with SQL and data modeling.
 - Clear, empathetic communicator with outstanding technical writing capabilities.`
+  },
+  {
+    id: "shopify-data-analyst",
+    targetRole: "Junior Data Analyst",
+    company: "Shopify",
+    sourceName: "Shopify Careers",
+    sourceUrl: "https://www.shopify.com/careers",
+    summary: "Operations Specialist pivoting to Junior Data Analyst focusing on SQL, Tableau, and business metrics.",
+    sampleBackground: "Operations Specialist with 3 years analyzing team workflows, operational SLAs, and merchant escalations using Excel and Google Sheets. Looking to pivot into a Junior Data Analyst role building SQL dashboards, Tableau visualizations, and cohort retention analyses.",
+    sampleResume: `TAYLOR MORGAN
+Operations Specialist | Austin, TX | taylor.morgan@example.com
+
+SUMMARY
+Detail-oriented Operations Specialist with 3+ years managing merchant workflows, SLA reporting, and cross-functional operational metrics using advanced Excel (VLOOKUP, INDEX/MATCH, Pivot Tables). Self-taught in SQL and Tableau; built internal reporting prototypes. Seeking to transition full-time into Junior Data Analytics.
+
+EXPERIENCE
+Operations Specialist | SwiftCommerce (2022 - Present)
+- Designed and maintained team KPI dashboards tracking 12,000+ monthly merchant tickets with 99.4% SLA adherence.
+- Conducted root-cause analysis on recurring fulfillment delays, reducing ticket resolution time by 18%.
+- Wrote basic SQL queries in Snowflake to extract transaction volumes for quarterly management reviews.
+- Built exploratory Tableau dashboards visualizing merchant tier distributions.
+
+Customer Operations Associate | RetailPulse (2020 - 2022)
+- Managed daily merchant operations and resolved tier-2 onboarding escalations.
+- Automated weekly operational summary reports using Google Sheets formulas, saving 5 hours weekly.
+
+SKILLS & CERTIFICATIONS
+- Analytical Tools: Advanced Excel, Google Sheets, Tableau (Foundational), Power BI basics
+- Data & Querying: SQL (PostgreSQL/Snowflake - joins, aggregations, CTEs), Python basics (pandas)
+- Business Competencies: SLA Tracking, KPI Reporting, Root-Cause Analysis, Cross-Team Communication
+- Education: B.A. in Business Economics | University of Texas at Austin (2020)`,
+    sampleJobDescription: `Role: Junior Data Analyst - Merchant Analytics
+Company: Shopify
+Source: https://www.shopify.com/careers
+
+About the Role:
+Shopify makes commerce better for everyone. As a Junior Data Analyst on the Merchant Analytics team, you will turn complex transaction and merchant operational data into actionable insights that help leadership make data-driven decisions.
+
+Responsibilities:
+- Write clean, performant SQL queries to extract, transform, and aggregate data across distributed data warehouses.
+- Design, build, and maintain interactive dashboards in Tableau and Mode to monitor core business KPIs.
+- Partner with operations, product, and finance teams to investigate anomalies and explain metric variances.
+- Conduct exploratory cohort retention and conversion funnel analyses.
+- Present data-driven findings clearly to technical and non-technical stakeholders.
+
+Requirements:
+- 1-2 years of analytical experience (in operations, finance, or business analytics) or equivalent academic coursework.
+- Strong proficiency in SQL (joins, window functions, CTEs, aggregations).
+- Hands-on experience with modern BI tools (Tableau, Power BI, Looker, or Mode).
+- Solid grasp of foundational business metrics (retention, churn, conversion rate, CAC, LTV).
+- Curious mindset, rigorous attention to detail, and ability to communicate findings with clarity.`
   }
 ];

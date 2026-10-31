@@ -41,6 +41,8 @@ export interface LearningPlan {
   version: number;
   modelUsed?: string;
   isMockFallback?: boolean;
+  isArchived?: boolean;
+  archivedForRole?: string;
 }
 
 export interface InterviewCriterionScore {
@@ -53,6 +55,7 @@ export interface InterviewCriterionScore {
 export interface InterviewEvaluation {
   id: string;
   createdAt: string;
+  targetRole?: string;
   question: string;
   targetSkillGap: string;
   userAnswer: string;
@@ -68,6 +71,7 @@ export interface InterviewEvaluation {
 export interface MockInterviewQuestion {
   id: string;
   question: string;
+  targetRole?: string;
   targetSkillGap: string;
   difficulty: "Fundamental" | "Intermediate" | "Advanced";
   context: string;
@@ -75,6 +79,9 @@ export interface MockInterviewQuestion {
 }
 
 export interface SkillGapAnalysis {
+  id?: string;
+  targetRole?: string;
+  createdAt?: string;
   overallMatchScore: number;
   feasibilityRating: "High" | "Moderate" | "Challenging";
   summary: string;
@@ -98,6 +105,26 @@ export interface JobApplication {
   outcome: ApplicationOutcome;
   notes?: string;
   isSampleData?: boolean;
+  sampleBatchRole?: string; // E.g. "AI Applications Engineer" or "Junior Data Analyst"
+}
+
+export interface ProfileMismatchNotice {
+  previousRole: string;
+  newRole: string;
+  hasExistingPlan: boolean;
+  hasExistingInterview: boolean;
+  existingCompletedTasks?: number;
+  existingInterviewScore?: number;
+}
+
+export interface ArchivedProfileData {
+  id: string;
+  targetRole: string;
+  archivedAt: string;
+  learningPlan?: LearningPlan | null;
+  interviewQuestions?: MockInterviewQuestion[];
+  interviewEvaluation?: InterviewEvaluation | null;
+  interviewTargetRole?: string;
 }
 
 export interface CategoryOutcomeStats {

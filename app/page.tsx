@@ -6,14 +6,16 @@ import { JobPresets } from "@/app/components/JobPresets";
 import { SkillGapResults } from "@/app/components/SkillGapResults";
 import { LearningPlanView } from "@/app/components/LearningPlanView";
 import { MockInterviewView } from "@/app/components/MockInterviewView";
-import { ApplicationTrackerView, SAMPLE_APPLICATIONS } from "@/app/components/ApplicationTrackerView";
+import { ApplicationTrackerView, SAMPLE_APPLICATIONS, SAMPLE_DATA_ANALYST_APPLICATIONS } from "@/app/components/ApplicationTrackerView";
 import { ResumeUpload } from "@/app/components/ResumeUpload";
 import {
+  ArchivedProfileData,
   InterviewEvaluation,
   JobApplication,
   JobPreset,
   LearningPlan,
   MockInterviewQuestion,
+  ProfileMismatchNotice,
   SkillGapAnalysis,
 } from "@/types/pivot";
 
@@ -78,6 +80,9 @@ export default function Home() {
   const [selectedInterviewQuestion, setSelectedInterviewQuestion] = useState<MockInterviewQuestion | null>(null);
   const [interviewUserAnswer, setInterviewUserAnswer] = useState<string>("");
   const [interviewEvaluation, setInterviewEvaluation] = useState<InterviewEvaluation | null>(null);
+  const [interviewTargetRole, setInterviewTargetRole] = useState<string>("");
+  const [profileMismatchNotice, setProfileMismatchNotice] = useState<ProfileMismatchNotice | null>(null);
+  const [archivedProfilesData, setArchivedProfilesData] = useState<ArchivedProfileData[]>([]);
   const [applications, setApplications] = useState<JobApplication[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
@@ -112,6 +117,9 @@ export default function Home() {
         if (parsed.selectedInterviewQuestion) setSelectedInterviewQuestion(parsed.selectedInterviewQuestion);
         if (parsed.interviewUserAnswer) setInterviewUserAnswer(parsed.interviewUserAnswer);
         if (parsed.interviewEvaluation) setInterviewEvaluation(parsed.interviewEvaluation);
+        if (parsed.interviewTargetRole) setInterviewTargetRole(parsed.interviewTargetRole);
+        if (parsed.profileMismatchNotice) setProfileMismatchNotice(parsed.profileMismatchNotice);
+        if (parsed.archivedProfilesData) setArchivedProfilesData(parsed.archivedProfilesData);
         if (parsed.applications) setApplications(parsed.applications);
         if (parsed.activeSection && ["profile", "analysis", "plan", "interview", "tracker"].includes(parsed.activeSection)) {
           setActiveSection(parsed.activeSection);
@@ -140,6 +148,9 @@ export default function Home() {
         selectedInterviewQuestion,
         interviewUserAnswer,
         interviewEvaluation,
+        interviewTargetRole,
+        profileMismatchNotice,
+        archivedProfilesData,
         applications,
         activeSection,
       };
@@ -164,6 +175,9 @@ export default function Home() {
     selectedInterviewQuestion,
     interviewUserAnswer,
     interviewEvaluation,
+    interviewTargetRole,
+    profileMismatchNotice,
+    archivedProfilesData,
     applications,
     activeSection,
     isClient,
@@ -183,6 +197,34 @@ export default function Home() {
     setResumeText(preset.sampleResume);
     setJobDescription(preset.sampleJobDescription);
     setErrorMsg("");
+
+    // Check if existing downstream data belongs to a different role
+    const existingDownstreamRole =
+      learningPlan?.targetRole ||
+      interviewTargetRole ||
+      analysis?.targetRole;
+
+    if (
+      existingDownstreamRole &&
+      existingDownstreamRole.trim().toLowerCase() !== preset.targetRole.trim().toLowerCase()
+    ) {
+      const hasPlan = Boolean(learningPlan);
+      const hasInterview = Boolean(interviewQuestions.length > 0 || interviewEvaluation);
+      if (hasPlan || hasInterview) {
+        setProfileMismatchNotice({
+          previousRole: existingDownstreamRole,
+          newRole: preset.targetRole,
+          hasExistingPlan: hasPlan,
+          hasExistingInterview: hasInterview,
+          existingCompletedTasks: learningPlan
+            ? learningPlan.weeks.filter((w) => w.completed).length
+            : 0,
+          existingInterviewScore: interviewEvaluation?.totalScore,
+        });
+      }
+    } else {
+      setProfileMismatchNotice(null);
+    }
   };
 
   const handleClear = () => {
@@ -200,6 +242,9 @@ export default function Home() {
       setSelectedInterviewQuestion(null);
       setInterviewUserAnswer("");
       setInterviewEvaluation(null);
+      setInterviewTargetRole("");
+      setProfileMismatchNotice(null);
+      setArchivedProfilesData([]);
       setApplications([]);
       setErrorMsg("");
       setPlanErrorMsg("");
@@ -207,6 +252,39 @@ export default function Home() {
       setActiveSection("profile");
       localStorage.removeItem(STORAGE_KEY);
     }
+  };
+
+  const handleStartFreshDownstream = () => {
+    // Safely archive existing downstream work so nothing is silently lost
+    if (learningPlan || interviewQuestions.length > 0 || interviewEvaluation) {
+      const prevRole = learningPlan?.targetRole || interviewTargetRole || "Previous Profile";
+      const archiveEntry: ArchivedProfileData = {
+        id: `archive-${Date.now()}`,
+        targetRole: prevRole,
+        archivedAt: new Date().toISOString(),
+        learningPlan,
+        interviewQuestions,
+        interviewEvaluation,
+        interviewTargetRole,
+      };
+      setArchivedProfilesData((prev) => [archiveEntry, ...prev]);
+    }
+
+    // Reset active plan and interview for the new role: tasks, questions, and scores will NOT carry over
+    setLearningPlan(null);
+    setPreviousLearningPlan(null);
+    setInterviewQuestions([]);
+    setSelectedInterviewQuestion(null);
+    setInterviewUserAnswer("");
+    setInterviewEvaluation(null);
+    setInterviewTargetRole(targetRole);
+    setProfileMismatchNotice(null);
+    setPlanErrorMsg("");
+    setInterviewErrorMsg("");
+  };
+
+  const handleDismissMismatchNotice = () => {
+    setProfileMismatchNotice(null);
   };
 
   const handleAnalyze = async () => {
@@ -236,7 +314,36 @@ export default function Home() {
         throw new Error(data.error || "Failed to analyze skill gap.");
       }
 
-      setAnalysis(data);
+      const analyzedResult: SkillGapAnalysis = {
+        ...data,
+        targetRole,
+        id: `analysis-${Date.now()}`,
+        createdAt: new Date().toISOString(),
+      };
+      setAnalysis(analyzedResult);
+
+      // Check if downstream learning plan or mock interview belongs to a different profile
+      const planRoleMismatch =
+        learningPlan &&
+        learningPlan.targetRole.trim().toLowerCase() !== targetRole.trim().toLowerCase();
+      const interviewRoleMismatch =
+        (interviewQuestions.length > 0 || interviewEvaluation) &&
+        interviewTargetRole &&
+        interviewTargetRole.trim().toLowerCase() !== targetRole.trim().toLowerCase();
+
+      if (planRoleMismatch || interviewRoleMismatch) {
+        setProfileMismatchNotice({
+          previousRole: learningPlan?.targetRole || interviewTargetRole || "Previous Profile",
+          newRole: targetRole,
+          hasExistingPlan: Boolean(learningPlan),
+          hasExistingInterview: Boolean(interviewQuestions.length > 0 || interviewEvaluation),
+          existingCompletedTasks: learningPlan ? learningPlan.weeks.filter((w) => w.completed).length : 0,
+          existingInterviewScore: interviewEvaluation?.totalScore,
+        });
+      } else {
+        setProfileMismatchNotice(null);
+      }
+
       navigateTo("analysis");
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "An unexpected error occurred.";
@@ -254,6 +361,20 @@ export default function Home() {
 
     setPlanErrorMsg("");
     setIsGeneratingPlan(true);
+
+    // If an existing plan belonged to a different role, archive it first
+    if (learningPlan && learningPlan.targetRole.trim().toLowerCase() !== targetRole.trim().toLowerCase()) {
+      setArchivedProfilesData((prev) => [
+        {
+          id: `archive-plan-${Date.now()}`,
+          targetRole: learningPlan.targetRole,
+          archivedAt: new Date().toISOString(),
+          learningPlan,
+        },
+        ...prev,
+      ]);
+      setPreviousLearningPlan(null);
+    }
 
     try {
       const response = await fetch("/api/plan", {
@@ -275,6 +396,11 @@ export default function Home() {
       }
 
       setLearningPlan(data);
+      if (profileMismatchNotice && profileMismatchNotice.newRole.trim().toLowerCase() === targetRole.trim().toLowerCase()) {
+        if (!profileMismatchNotice.hasExistingInterview) {
+          setProfileMismatchNotice(null);
+        }
+      }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Failed to generate learning plan.";
       setPlanErrorMsg(message);
@@ -285,6 +411,12 @@ export default function Home() {
 
   const handleRecalibratePlan = async () => {
     if (!learningPlan || !targetRole.trim() || !analysis) {
+      return;
+    }
+
+    // Guard: Prevent recalibrating a plan whose role does not match the active target role
+    if (learningPlan.targetRole.trim().toLowerCase() !== targetRole.trim().toLowerCase()) {
+      setPlanErrorMsg(`Cannot recalibrate a plan generated for "${learningPlan.targetRole}" using "${targetRole}" gaps. Please generate a fresh plan.`);
       return;
     }
 
@@ -341,6 +473,25 @@ export default function Home() {
     setInterviewErrorMsg("");
     setIsGeneratingQuestions(true);
 
+    // If an existing interview was from a different profile, archive it
+    if (
+      interviewTargetRole &&
+      interviewTargetRole.trim().toLowerCase() !== targetRole.trim().toLowerCase() &&
+      (interviewQuestions.length > 0 || interviewEvaluation)
+    ) {
+      setArchivedProfilesData((prev) => [
+        {
+          id: `archive-interview-${Date.now()}`,
+          targetRole: interviewTargetRole,
+          archivedAt: new Date().toISOString(),
+          interviewQuestions,
+          interviewEvaluation,
+          interviewTargetRole,
+        },
+        ...prev,
+      ]);
+    }
+
     try {
       const response = await fetch("/api/interview", {
         method: "POST",
@@ -360,8 +511,14 @@ export default function Home() {
       }
 
       setInterviewQuestions(data.questions || []);
+      setInterviewTargetRole(targetRole);
+      setInterviewEvaluation(null); // Clear previous evaluation score so old score isn't silently shown
+      setInterviewUserAnswer("");
       if (data.questions && data.questions.length > 0) {
         setSelectedInterviewQuestion(data.questions[0]);
+      }
+      if (profileMismatchNotice && profileMismatchNotice.newRole.trim().toLowerCase() === targetRole.trim().toLowerCase()) {
+        setProfileMismatchNotice(null);
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Failed to generate interview questions.";
@@ -386,7 +543,7 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           action: "evaluate-answer",
-          targetRole,
+          targetRole: interviewTargetRole || targetRole,
           background,
           question: selectedInterviewQuestion.question,
           targetSkillGap: selectedInterviewQuestion.targetSkillGap,
@@ -400,7 +557,10 @@ export default function Home() {
         throw new Error(data.error || "Failed to evaluate answer.");
       }
 
-      setInterviewEvaluation(data);
+      setInterviewEvaluation({
+        ...data,
+        targetRole: interviewTargetRole || targetRole,
+      });
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Failed to evaluate interview answer.";
       setInterviewErrorMsg(message);
@@ -427,8 +587,31 @@ export default function Home() {
     setApplications((prev) => prev.filter((a) => a.id !== id));
   };
 
+  const handleLoadRoleSampleData = (role: string) => {
+    const isData = role.toLowerCase().includes("data") || role.toLowerCase().includes("analyst");
+    const newBatch = isData ? SAMPLE_DATA_ANALYST_APPLICATIONS : SAMPLE_APPLICATIONS;
+    // Preserve custom applications created by the user, replace only sample data
+    setApplications((prev) => {
+      const userCustom = prev.filter((a) => !a.isSampleData);
+      return [...newBatch, ...userCustom];
+    });
+  };
+
+  const handleClearPreviousDemoData = () => {
+    if (!targetRole) return;
+    // Remove only demo data from other roles; preserve user custom entries and current role demo
+    setApplications((prev) =>
+      prev.filter(
+        (a) =>
+          !a.isSampleData ||
+          !a.sampleBatchRole ||
+          a.sampleBatchRole.trim().toLowerCase() === targetRole.trim().toLowerCase()
+      )
+    );
+  };
+
   const handleLoadSampleApplications = () => {
-    setApplications(SAMPLE_APPLICATIONS);
+    handleLoadRoleSampleData(targetRole || "");
   };
 
   const handleClearApplications = () => {
@@ -847,7 +1030,14 @@ export default function Home() {
               </div>
             ) : (
               <>
-                <SkillGapResults analysis={analysis} isLoading={isLoading} />
+                <SkillGapResults
+                  analysis={analysis}
+                  isLoading={isLoading}
+                  targetRole={targetRole}
+                  mismatchNotice={profileMismatchNotice}
+                  onStartFreshDownstream={handleStartFreshDownstream}
+                  onDismissMismatchNotice={handleDismissMismatchNotice}
+                />
 
                 {viewMode === "tabbed" && analysis && (
                   <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 rounded-xl border border-slate-200 bg-white">
@@ -902,8 +1092,14 @@ export default function Home() {
               onGeneratePlan={handleGeneratePlan}
               onRecalibratePlan={handleRecalibratePlan}
               onToggleTask={handleToggleTask}
+              onStartFreshPlan={handleGeneratePlan}
               isGenerating={isGeneratingPlan}
               isRecalibrating={isRecalibratingPlan}
+              isProfileMismatch={Boolean(
+                learningPlan &&
+                targetRole &&
+                learningPlan.targetRole.trim().toLowerCase() !== targetRole.trim().toLowerCase()
+              )}
               errorMsg={planErrorMsg}
             />
 
@@ -956,10 +1152,18 @@ export default function Home() {
               selectedQuestion={selectedInterviewQuestion}
               userAnswer={interviewUserAnswer}
               evaluation={interviewEvaluation}
+              interviewTargetRole={interviewTargetRole || targetRole}
+              isProfileMismatch={Boolean(
+                (interviewQuestions.length > 0 || interviewEvaluation) &&
+                interviewTargetRole &&
+                targetRole &&
+                interviewTargetRole.trim().toLowerCase() !== targetRole.trim().toLowerCase()
+              )}
               onSelectQuestion={setSelectedInterviewQuestion}
               onAnswerChange={setInterviewUserAnswer}
               onGenerateQuestions={handleGenerateInterviewQuestions}
               onSubmitAnswer={handleSubmitInterviewAnswer}
+              onStartFreshInterview={handleGenerateInterviewQuestions}
               isGeneratingQuestions={isGeneratingQuestions}
               isEvaluating={isEvaluatingInterview}
               errorMsg={interviewErrorMsg}
@@ -1013,6 +1217,9 @@ export default function Home() {
               onDeleteApplication={handleDeleteApplication}
               onLoadSampleData={handleLoadSampleApplications}
               onClearAll={handleClearApplications}
+              targetRole={targetRole || "Target Role"}
+              onLoadRoleSampleData={handleLoadRoleSampleData}
+              onClearPreviousDemoData={handleClearPreviousDemoData}
             />
 
             {viewMode === "tabbed" && (

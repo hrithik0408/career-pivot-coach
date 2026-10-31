@@ -13,9 +13,11 @@ interface LearningPlanViewProps {
   onGeneratePlan: () => Promise<void>;
   onRecalibratePlan: () => Promise<void>;
   onToggleTask: (taskId: string) => void;
+  onStartFreshPlan?: () => void;
   isGenerating: boolean;
   isRecalibrating: boolean;
   errorMsg?: string;
+  isProfileMismatch?: boolean;
 }
 
 export function LearningPlanView({
@@ -28,15 +30,22 @@ export function LearningPlanView({
   onGeneratePlan,
   onRecalibratePlan,
   onToggleTask,
+  onStartFreshPlan,
   isGenerating,
   isRecalibrating,
   errorMsg,
+  isProfileMismatch,
 }: LearningPlanViewProps) {
   const [showComparison, setShowComparison] = useState(true);
 
   const completedCount = plan ? plan.weeks.filter((w) => w.completed).length : 0;
   const totalCount = plan ? plan.weeks.length : 0;
   const progressPercent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+
+  const isMismatch = Boolean(
+    isProfileMismatch ||
+    (plan && targetRole && plan.targetRole.trim().toLowerCase() !== targetRole.trim().toLowerCase())
+  );
 
   return (
     <div className="space-y-6">
@@ -89,6 +98,45 @@ export function LearningPlanView({
           </div>
         </div>
 
+        {/* Profile Mismatch Warning Banner */}
+        {isMismatch && plan && (
+          <div className="p-4 rounded-xl border border-amber-300 bg-amber-50/90 space-y-3">
+            <div className="flex items-start gap-2.5">
+              <div className="w-6 h-6 rounded-full bg-amber-200 text-amber-900 flex items-center justify-center shrink-0 mt-0.5 font-bold text-xs">
+                !
+              </div>
+              <div>
+                <h4 className="text-xs font-bold text-amber-950">
+                  Curriculum Associated with Previous Profile: {plan.targetRole}
+                </h4>
+                <p className="text-xs text-amber-900 mt-1 leading-relaxed">
+                  This study plan and its completed tasks ({completedCount} of {totalCount} weeks done) were generated for <strong>{plan.targetRole}</strong>. Your current active analysis is for <strong>{targetRole}</strong>.
+                </p>
+                <p className="text-xs text-amber-800 mt-0.5">
+                  Completed milestones from {plan.targetRole} will not be carried over. Click below to generate a fresh curriculum aligned with your {skillGaps.length} current skill gaps.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 pt-1">
+              <button
+                type="button"
+                disabled={isGenerating || skillGaps.length === 0}
+                onClick={onStartFreshPlan || onGeneratePlan}
+                className="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-all shadow-xs cursor-pointer flex items-center gap-2"
+              >
+                {isGenerating ? (
+                  <>
+                    <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <span>Building Plan for {targetRole}...</span>
+                  </>
+                ) : (
+                  <span>Start Fresh Plan for {targetRole} ({weeklyStudyHours}h/wk)</span>
+                )}
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Generate Button when no plan exists */}
         {!plan && (
           <div className="p-8 rounded-lg border border-dashed border-slate-300 text-center flex flex-col items-center justify-center gap-3 bg-slate-50/40">
@@ -102,7 +150,7 @@ export function LearningPlanView({
                 Ready to Generate Curriculum Schedule
               </h4>
               <p className="text-xs text-slate-500 max-w-md mt-1">
-                Creates a weekly roadmap addressing your {skillGaps.length} skill gap{skillGaps.length === 1 ? "" : "s"} at {weeklyStudyHours} study hours per week.
+                Creates a weekly roadmap addressing your {skillGaps.length} skill gap{skillGaps.length === 1 ? "" : "s"} at {weeklyStudyHours} study hours per week for {targetRole}.
               </p>
             </div>
             <button
@@ -121,7 +169,7 @@ export function LearningPlanView({
                   <span>Generating Learning Plan with Gemini AI...</span>
                 </>
               ) : (
-                <span>Generate Week-by-Week Learning Plan</span>
+                <span>Generate Week-by-Week Learning Plan ({targetRole})</span>
               )}
             </button>
           </div>
@@ -137,6 +185,9 @@ export function LearningPlanView({
                 </span>
                 <span className="font-semibold text-blue-700">
                   {completedCount} of {totalCount} weeks completed ({progressPercent}%)
+                </span>
+                <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-blue-50 text-blue-800 border border-blue-200">
+                  Role: {plan.targetRole}
                 </span>
                 <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
                   Version {plan.version}
@@ -155,26 +206,37 @@ export function LearningPlanView({
                   </button>
                 )}
 
-                <button
-                  type="button"
-                  disabled={isRecalibrating}
-                  onClick={onRecalibratePlan}
-                  title="Recalculate remaining schedule based on current completed and pending tasks"
-                  className={`py-1 px-3 rounded text-xs font-bold transition-all flex items-center gap-1.5 ${
-                    isRecalibrating
-                      ? "bg-slate-200 text-slate-500 cursor-not-allowed"
-                      : "bg-slate-900 hover:bg-slate-800 text-white cursor-pointer shadow-2xs"
-                  }`}
-                >
-                  {isRecalibrating ? (
-                    <>
-                      <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      <span>Updating Schedule...</span>
-                    </>
-                  ) : (
-                    <span>Update Plan Based on Progress</span>
-                  )}
-                </button>
+                {isMismatch ? (
+                  <button
+                    type="button"
+                    disabled={isGenerating || skillGaps.length === 0}
+                    onClick={onStartFreshPlan || onGeneratePlan}
+                    className="py-1 px-3 rounded text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white cursor-pointer shadow-2xs transition-all"
+                  >
+                    Generate Fresh Plan for {targetRole}
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    disabled={isRecalibrating}
+                    onClick={onRecalibratePlan}
+                    title="Recalculate remaining schedule based on current completed and pending tasks"
+                    className={`py-1 px-3 rounded text-xs font-bold transition-all flex items-center gap-1.5 ${
+                      isRecalibrating
+                        ? "bg-slate-200 text-slate-500 cursor-not-allowed"
+                        : "bg-slate-900 hover:bg-slate-800 text-white cursor-pointer shadow-2xs"
+                    }`}
+                  >
+                    {isRecalibrating ? (
+                      <>
+                        <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        <span>Updating Schedule...</span>
+                      </>
+                    ) : (
+                      <span>Update Plan Based on Progress</span>
+                    )}
+                  </button>
+                )}
               </div>
             </div>
 

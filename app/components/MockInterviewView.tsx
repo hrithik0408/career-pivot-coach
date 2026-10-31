@@ -12,10 +12,13 @@ interface MockInterviewViewProps {
   selectedQuestion: MockInterviewQuestion | null;
   userAnswer: string;
   evaluation: InterviewEvaluation | null;
+  interviewTargetRole?: string;
+  isProfileMismatch?: boolean;
   onSelectQuestion: (question: MockInterviewQuestion) => void;
   onAnswerChange: (answer: string) => void;
   onGenerateQuestions: () => Promise<void>;
   onSubmitAnswer: () => Promise<void>;
+  onStartFreshInterview?: () => void;
   isGeneratingQuestions: boolean;
   isEvaluating: boolean;
   errorMsg?: string;
@@ -28,14 +31,21 @@ export function MockInterviewView({
   selectedQuestion,
   userAnswer,
   evaluation,
+  interviewTargetRole,
+  isProfileMismatch,
   onSelectQuestion,
   onAnswerChange,
   onGenerateQuestions,
   onSubmitAnswer,
+  onStartFreshInterview,
   isGeneratingQuestions,
   isEvaluating,
   errorMsg,
 }: MockInterviewViewProps) {
+  const isMismatch = Boolean(
+    isProfileMismatch ||
+    (interviewTargetRole && targetRole && interviewTargetRole.trim().toLowerCase() !== targetRole.trim().toLowerCase() && (questions.length > 0 || evaluation))
+  );
   const getDifficultyBadge = (difficulty: string) => {
     switch (difficulty) {
       case "Advanced":
@@ -68,6 +78,45 @@ export function MockInterviewView({
           </div>
         </div>
 
+        {/* Profile Mismatch Warning Banner */}
+        {isMismatch && (
+          <div className="p-4 rounded-xl border border-amber-300 bg-amber-50/90 space-y-3">
+            <div className="flex items-start gap-2.5">
+              <div className="w-6 h-6 rounded-full bg-amber-200 text-amber-900 flex items-center justify-center shrink-0 mt-0.5 font-bold text-xs">
+                !
+              </div>
+              <div>
+                <h4 className="text-xs font-bold text-amber-950">
+                  Interview Prompts &amp; Scores Belong to Previous Profile: {interviewTargetRole}
+                </h4>
+                <p className="text-xs text-amber-900 mt-1 leading-relaxed">
+                  These practice questions and evaluation scores belong to <strong>{interviewTargetRole}</strong>. Your current active analysis is for <strong>{targetRole}</strong>.
+                </p>
+                <p className="text-xs text-amber-800 mt-0.5">
+                  Prior questions, answers, and scores will not be counted toward {targetRole}. Synthesize fresh questions below.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 pt-1">
+              <button
+                type="button"
+                disabled={isGeneratingQuestions || skillGaps.length === 0}
+                onClick={onStartFreshInterview || onGenerateQuestions}
+                className="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-all shadow-xs cursor-pointer flex items-center gap-2"
+              >
+                {isGeneratingQuestions ? (
+                  <>
+                    <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <span>Synthesizing Prompts for {targetRole}...</span>
+                  </>
+                ) : (
+                  <span>Generate Fresh Questions for {targetRole}</span>
+                )}
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Generate / Refresh Questions Action */}
         {questions.length === 0 ? (
           <div className="p-8 rounded-lg border border-dashed border-slate-300 text-center flex flex-col items-center justify-center gap-3 bg-slate-50/40">
@@ -81,7 +130,7 @@ export function MockInterviewView({
                 Ready to Generate Interview Practice Prompts
               </h4>
               <p className="text-xs text-slate-500 max-w-md mt-1">
-                Gemini AI will synthesize questions targeting your {skillGaps.length} skill gap{skillGaps.length === 1 ? "" : "s"}.
+                Gemini AI will synthesize questions targeting your {skillGaps.length} skill gap{skillGaps.length === 1 ? "" : "s"} for {targetRole}.
               </p>
             </div>
             <button
@@ -100,23 +149,28 @@ export function MockInterviewView({
                   <span>Synthesizing Interview Prompts...</span>
                 </>
               ) : (
-                <span>Generate Tailored Questions</span>
+                <span>Generate Tailored Questions ({targetRole})</span>
               )}
             </button>
           </div>
         ) : (
           <div className="space-y-3">
-            <div className="flex items-center justify-between text-xs">
-              <span className="font-bold text-slate-900">
-                Select a Question to Practice:
-              </span>
+            <div className="flex items-center justify-between text-xs flex-wrap gap-2">
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-slate-900">
+                  Select a Question to Practice:
+                </span>
+                <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-blue-50 text-blue-800 border border-blue-200">
+                  Role: {interviewTargetRole || targetRole}
+                </span>
+              </div>
               <button
                 type="button"
                 disabled={isGeneratingQuestions}
-                onClick={onGenerateQuestions}
+                onClick={onStartFreshInterview || onGenerateQuestions}
                 className="text-xs text-blue-600 hover:underline flex items-center gap-1 font-semibold cursor-pointer"
               >
-                <span>{isGeneratingQuestions ? "Regenerating..." : "Regenerate Questions"}</span>
+                <span>{isGeneratingQuestions ? "Regenerating..." : isMismatch ? `Generate Fresh for ${targetRole}` : "Regenerate Questions"}</span>
               </button>
             </div>
 
@@ -231,9 +285,12 @@ export function MockInterviewView({
           {/* Header Score Banner */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-xs uppercase font-bold tracking-wider text-slate-500">
                   Rubric Assessment
+                </span>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-800 border border-blue-200">
+                  Role: {evaluation.targetRole || interviewTargetRole || targetRole}
                 </span>
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
                   Practice Feedback

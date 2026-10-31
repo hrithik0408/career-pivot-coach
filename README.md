@@ -162,20 +162,24 @@ Career Pivot Coach is built voice-first to encourage natural, reflective storyte
 
 ## Data Privacy & Security
 
+- **No Authentication / Account System**: User authentication is **not implemented**. The platform does not require sign-in, usernames, or passwords, and operates entirely client-side without remote user tracking or cloud account backends.
+- **Local Browser Storage**: All candidate profile inputs, uploaded resume text, weekly learning schedules, interview practice recordings/scores, and job application records are stored exclusively on your device in your browser's `localStorage` (`career_pivot_coach_v1`).
 - **Server-Side API Key Protection**: The Gemini API key is read strictly server-side inside Next.js route handlers (`/api/analyze`, `/api/plan`, `/api/interview`). It is **never** bundled into client JavaScript or sent to the browser.
-- **Local Browser Storage**: User profile inputs, resume text, study plans, interview evaluations, and job applications are stored exclusively on your device in your browser's `localStorage` (`career_pivot_coach_v1`).
-- **No Remote User Database**: The platform does not operate an external database, user tracking, or third-party telemetry. Clearing your browser data or clicking **Reset All** deletes your saved session data immediately.
+- **No Remote User Database**: The platform does not operate an external database or third-party telemetry. Clearing your browser data or clicking **Reset All** deletes your saved session data immediately.
 - **Git Protection**: Sensitive environment files (`.env`, `.env.local`, `.env*.local`) and build artifacts (`.next/`, `node_modules/`, `*.tsbuildinfo`) are excluded in `.gitignore`.
 
 ---
 
 ## Current Limitations
 
-1. **Scanned Image-Only PDFs**: Resume document parsing extracts text layers from digital PDFs. Scanned bitmap documents containing only images without text layers require optical character recognition (OCR) and will prompt the user to copy/paste text or dictate with Wispr Flow.
-2. **Legacy Binary Word Files (`.doc`)**: Only modern Office Open XML documents (`.docx`), digital PDFs (`.pdf`), and plain text files (`.txt`) are accepted. Legacy `.doc` binary files must be saved as `.docx` or `.pdf`.
-3. **File Size Boundary**: Resume uploads are capped at 5MB to ensure fast processing and responsive parsing.
-4. **Formative Practice Feedback**: Mock interview scores and rubric feedback are formative educational exercises designed to strengthen technical storytelling; they do not represent guaranteed hiring outcomes or official employer evaluation criteria.
-5. **Sample Size Limitations in Tracking**: Recommendations in the application tracker are exploratory working hypotheses based on early data points, not statistically significant conclusions.
+1. **Authentication Not Implemented**: There is no remote account or login system. Data does not synchronize across separate devices or different browsers; clearing browser data resets the active session.
+2. **Local Browser Storage Boundary**: Data relies on browser `localStorage` limits (typically 5MB-10MB). Exporting or saving important text externally is advised for long-term retention.
+3. **Demo Data Clearly Labelled**: All pre-loaded sample profiles (e.g. AI Applications Engineer, Junior Data Analyst) and pipeline applications are explicitly tagged with `Demo Examples`, `Demo Data ([Role])`, or `Previous Demo ([Role])` badges to prevent confusion with real user submissions. Old demo records can be cleared or updated at any time without deleting user-created applications.
+4. **Scanned Image-Only PDFs**: Resume document parsing extracts text layers from digital PDFs. Scanned bitmap documents containing only images without text layers require optical character recognition (OCR) and will prompt the user to copy/paste text or dictate with Wispr Flow.
+5. **Legacy Binary Word Files (`.doc`)**: Only modern Office Open XML documents (`.docx`), digital PDFs (`.pdf`), and plain text files (`.txt`) are accepted. Legacy `.doc` binary files must be saved as `.docx` or `.pdf`.
+6. **File Size Boundary**: Resume uploads are capped at 5MB to ensure fast processing and responsive parsing.
+7. **Formative Practice Feedback**: Mock interview scores and rubric feedback are formative educational exercises designed to strengthen technical storytelling; they do not represent guaranteed hiring outcomes or official employer evaluation criteria.
+8. **Sample Size Limitations in Tracking**: Recommendations in the application tracker are exploratory working hypotheses based on early data points, not statistically significant conclusions.
 
 ---
 

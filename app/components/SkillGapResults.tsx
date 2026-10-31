@@ -1,14 +1,25 @@
 "use client";
 
 import React from "react";
-import { SkillGapAnalysis } from "@/types/pivot";
+import { ProfileMismatchNotice, SkillGapAnalysis } from "@/types/pivot";
 
 interface SkillGapResultsProps {
   analysis: SkillGapAnalysis | null;
   isLoading: boolean;
+  targetRole?: string;
+  mismatchNotice?: ProfileMismatchNotice | null;
+  onStartFreshDownstream?: () => void;
+  onDismissMismatchNotice?: () => void;
 }
 
-export function SkillGapResults({ analysis, isLoading }: SkillGapResultsProps) {
+export function SkillGapResults({
+  analysis,
+  isLoading,
+  targetRole,
+  mismatchNotice,
+  onStartFreshDownstream,
+  onDismissMismatchNotice,
+}: SkillGapResultsProps) {
   if (isLoading) {
     return (
       <div className="p-10 rounded-xl border border-slate-200 bg-white flex flex-col items-center justify-center text-center gap-3 shadow-xs">
@@ -56,13 +67,56 @@ export function SkillGapResults({ analysis, isLoading }: SkillGapResultsProps) {
 
   return (
     <div className="space-y-6">
-      {/* Model & Advisory Guidance Notice */}
+      {/* Downstream Profile Mismatch Choice Banner */}
+      {mismatchNotice && (
+        <div className="p-5 rounded-xl border border-amber-300 bg-amber-50/90 shadow-xs space-y-3.5">
+          <div className="flex items-start gap-3">
+            <div className="w-7 h-7 rounded-full bg-amber-200 text-amber-900 flex items-center justify-center shrink-0 mt-0.5 font-bold text-xs">
+              !
+            </div>
+            <div>
+              <h4 className="text-sm font-bold text-amber-950">
+                New Profile Analysis: Start Fresh Downstream?
+              </h4>
+              <p className="text-xs text-amber-900 mt-1 leading-relaxed">
+                You just generated a skill gap analysis for <strong>{mismatchNotice.newRole}</strong>. However, your current Learning Plan and Mock Interview data belong to <strong>{mismatchNotice.previousRole}</strong>.
+              </p>
+              <p className="text-xs text-amber-800 mt-1">
+                Completed milestones, prior interview questions, and scores from {mismatchNotice.previousRole} will not be carried over to {mismatchNotice.newRole}.
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-3 pt-1">
+            <button
+              type="button"
+              onClick={onStartFreshDownstream}
+              className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-all shadow-xs cursor-pointer flex items-center gap-1.5"
+            >
+              <span>Start Fresh Plan &amp; Interview for {mismatchNotice.newRole}</span>
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              onClick={onDismissMismatchNotice}
+              className="px-3.5 py-2 rounded-lg border border-amber-300 bg-white hover:bg-amber-100 text-amber-900 font-semibold text-xs transition-all cursor-pointer"
+            >
+              Keep Previous Plan as Archived Reference
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Profile Association & Model Notice */}
       <div className="p-3.5 rounded-lg border border-slate-200 bg-white text-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 shadow-2xs">
-        <div className="flex items-center gap-2 text-slate-700">
-          <svg className="w-4 h-4 text-blue-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <span>
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="font-bold text-slate-900">Analyzed Target Role:</span>
+          <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 font-semibold border border-blue-200">
+            {analysis.targetRole || targetRole || "Target Role"}
+          </span>
+          <span className="text-slate-400">|</span>
+          <span className="text-slate-600">
             <strong>Advisory Guidance:</strong> AI-evaluated skill alignment for coaching purposes. Not a guaranteed hiring outcome.
           </span>
         </div>

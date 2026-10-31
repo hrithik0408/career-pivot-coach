@@ -17,6 +17,7 @@ export const SAMPLE_APPLICATIONS: JobApplication[] = [
     outcome: "interview",
     notes: "Passed recruiter screen. Recruiter emphasized customer engineering track record.",
     isSampleData: true,
+    sampleBatchRole: "AI Applications Engineer",
   },
   {
     id: "sample-2",
@@ -27,6 +28,7 @@ export const SAMPLE_APPLICATIONS: JobApplication[] = [
     outcome: "interview",
     notes: "System design assessment on RAG and vector retrieval.",
     isSampleData: true,
+    sampleBatchRole: "AI Applications Engineer",
   },
   {
     id: "sample-3",
@@ -37,6 +39,7 @@ export const SAMPLE_APPLICATIONS: JobApplication[] = [
     outcome: "interview",
     notes: "Take-home API evaluation passed.",
     isSampleData: true,
+    sampleBatchRole: "AI Applications Engineer",
   },
   {
     id: "sample-4",
@@ -47,6 +50,7 @@ export const SAMPLE_APPLICATIONS: JobApplication[] = [
     outcome: "applied",
     notes: "Applied via referral. Currently in review (pending).",
     isSampleData: true,
+    sampleBatchRole: "AI Applications Engineer",
   },
   {
     id: "sample-5",
@@ -57,6 +61,7 @@ export const SAMPLE_APPLICATIONS: JobApplication[] = [
     outcome: "rejected",
     notes: "Screened out at resume review.",
     isSampleData: true,
+    sampleBatchRole: "AI Applications Engineer",
   },
   {
     id: "sample-6",
@@ -67,6 +72,7 @@ export const SAMPLE_APPLICATIONS: JobApplication[] = [
     outcome: "rejected",
     notes: "Role requires PhD in machine learning or relevant publication record.",
     isSampleData: true,
+    sampleBatchRole: "AI Applications Engineer",
   },
   {
     id: "sample-7",
@@ -77,6 +83,7 @@ export const SAMPLE_APPLICATIONS: JobApplication[] = [
     outcome: "rejected",
     notes: "Heavy emphasis on core mathematical ML formalisms.",
     isSampleData: true,
+    sampleBatchRole: "AI Applications Engineer",
   },
   {
     id: "sample-8",
@@ -87,6 +94,7 @@ export const SAMPLE_APPLICATIONS: JobApplication[] = [
     outcome: "no_response",
     notes: "Cold portal submission over 3 weeks ago.",
     isSampleData: true,
+    sampleBatchRole: "AI Applications Engineer",
   },
   {
     id: "sample-9",
@@ -97,6 +105,7 @@ export const SAMPLE_APPLICATIONS: JobApplication[] = [
     outcome: "no_response",
     notes: "No automated update received.",
     isSampleData: true,
+    sampleBatchRole: "AI Applications Engineer",
   },
   {
     id: "sample-10",
@@ -107,6 +116,7 @@ export const SAMPLE_APPLICATIONS: JobApplication[] = [
     outcome: "no_response",
     notes: "No outreach after 2 weeks.",
     isSampleData: true,
+    sampleBatchRole: "AI Applications Engineer",
   },
   {
     id: "sample-11",
@@ -117,6 +127,109 @@ export const SAMPLE_APPLICATIONS: JobApplication[] = [
     outcome: "rejected",
     notes: "Recruiter noted prior PM job title requirement.",
     isSampleData: true,
+    sampleBatchRole: "AI Applications Engineer",
+  },
+];
+
+export const SAMPLE_DATA_ANALYST_APPLICATIONS: JobApplication[] = [
+  {
+    id: "sample-da-1",
+    company: "Shopify",
+    role: "Junior Data Analyst",
+    roleCategory: "E-Commerce Analytics & BI",
+    applicationDate: "2026-10-15",
+    outcome: "applied",
+    notes: "Applied via employee referral. Under hiring team portfolio review.",
+    isSampleData: true,
+    sampleBatchRole: "Junior Data Analyst",
+  },
+  {
+    id: "sample-da-2",
+    company: "Spotify",
+    role: "Associate Product Analyst",
+    roleCategory: "Product Analytics",
+    applicationDate: "2026-10-18",
+    outcome: "interview",
+    notes: "Completed SQL take-home query assessment; scheduled for business stakeholder interview.",
+    isSampleData: true,
+    sampleBatchRole: "Junior Data Analyst",
+  },
+  {
+    id: "sample-da-3",
+    company: "DoorDash",
+    role: "Operations Data Analyst",
+    roleCategory: "Business Operations Analytics",
+    applicationDate: "2026-10-20",
+    outcome: "interview",
+    notes: "Take-home case study analyzing Dasher supply/demand bottlenecks in Tableau.",
+    isSampleData: true,
+    sampleBatchRole: "Junior Data Analyst",
+  },
+  {
+    id: "sample-da-4",
+    company: "Stripe",
+    role: "Risk & Fraud Data Analyst",
+    roleCategory: "Business Operations Analytics",
+    applicationDate: "2026-10-22",
+    outcome: "interview",
+    notes: "Technical SQL screen on transaction chargeback windows and CTE aggregations.",
+    isSampleData: true,
+    sampleBatchRole: "Junior Data Analyst",
+  },
+  {
+    id: "sample-da-5",
+    company: "Airbnb",
+    role: "Business Intelligence Analyst",
+    roleCategory: "E-Commerce Analytics & BI",
+    applicationDate: "2026-10-10",
+    outcome: "rejected",
+    notes: "Role required 3+ years experience with dbt and Snowflake data modeling.",
+    isSampleData: true,
+    sampleBatchRole: "Junior Data Analyst",
+  },
+  {
+    id: "sample-da-6",
+    company: "Netflix",
+    role: "Junior Content Analyst",
+    roleCategory: "Product Analytics",
+    applicationDate: "2026-10-08",
+    outcome: "rejected",
+    notes: "Screened out at resume review; heavy emphasis on streaming telemetry.",
+    isSampleData: true,
+    sampleBatchRole: "Junior Data Analyst",
+  },
+  {
+    id: "sample-da-7",
+    company: "Instacart",
+    role: "Catalog Data Associate",
+    roleCategory: "E-Commerce Analytics & BI",
+    applicationDate: "2026-10-05",
+    outcome: "no_response",
+    notes: "Submitted via careers portal over 3 weeks ago without update.",
+    isSampleData: true,
+    sampleBatchRole: "Junior Data Analyst",
+  },
+  {
+    id: "sample-da-8",
+    company: "Uber",
+    role: "Marketplace Operations Analyst",
+    roleCategory: "Business Operations Analytics",
+    applicationDate: "2026-10-12",
+    outcome: "no_response",
+    notes: "Automated confirmation received; no recruiter follow-up.",
+    isSampleData: true,
+    sampleBatchRole: "Junior Data Analyst",
+  },
+  {
+    id: "sample-da-9",
+    company: "Pinterest",
+    role: "Growth Data Analyst",
+    roleCategory: "Product Analytics",
+    applicationDate: "2026-10-25",
+    outcome: "applied",
+    notes: "Direct application submitted; recruiter review pending.",
+    isSampleData: true,
+    sampleBatchRole: "Junior Data Analyst",
   },
 ];
 
@@ -127,6 +240,9 @@ interface ApplicationTrackerViewProps {
   onDeleteApplication: (id: string) => void;
   onLoadSampleData: () => void;
   onClearAll: () => void;
+  targetRole?: string;
+  onLoadRoleSampleData?: (role: string) => void;
+  onClearPreviousDemoData?: () => void;
 }
 
 export function ApplicationTrackerView({
@@ -136,6 +252,9 @@ export function ApplicationTrackerView({
   onDeleteApplication,
   onLoadSampleData,
   onClearAll,
+  targetRole,
+  onLoadRoleSampleData,
+  onClearPreviousDemoData,
 }: ApplicationTrackerViewProps) {
   const [filterCategory, setFilterCategory] = useState<string>("ALL");
   const [filterOutcome, setFilterOutcome] = useState<string>("ALL");
@@ -149,6 +268,22 @@ export function ApplicationTrackerView({
   const [formDate, setFormDate] = useState("");
   const [formOutcome, setFormOutcome] = useState<ApplicationOutcome>("applied");
   const [formNotes, setFormNotes] = useState("");
+
+  const previousDemoApps = useMemo(() => {
+    if (!targetRole) return [];
+    return applications.filter(
+      (a) =>
+        a.isSampleData &&
+        a.sampleBatchRole &&
+        a.sampleBatchRole.trim().toLowerCase() !== targetRole.trim().toLowerCase()
+    );
+  }, [applications, targetRole]);
+
+  const previousDemoBatchRoles = useMemo(() => {
+    return Array.from(
+      new Set(previousDemoApps.map((a) => a.sampleBatchRole || ""))
+    ).filter(Boolean);
+  }, [previousDemoApps]);
 
   const resetForm = () => {
     setFormCompany("");
@@ -336,13 +471,50 @@ export function ApplicationTrackerView({
     <div className="space-y-6">
       {/* Tracker Overview & Control Card */}
       <div className="p-6 rounded-xl border border-slate-200 bg-white shadow-xs space-y-4">
+        {/* Previous Profile Demo Data Warning Banner */}
+        {previousDemoApps.length > 0 && (
+          <div className="p-4 rounded-xl border border-amber-300 bg-amber-50/90 text-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-3 shadow-2xs">
+            <div className="flex items-start gap-2.5 text-amber-900">
+              <div className="w-5 h-5 rounded-full bg-amber-200 text-amber-950 flex items-center justify-center shrink-0 mt-0.5 font-bold text-[10px]">
+                i
+              </div>
+              <div>
+                <span className="font-bold text-amber-950">Previous Profile Demo Data Detected: </span>
+                <span className="leading-relaxed">
+                  This tracker holds {previousDemoApps.length} demo application{previousDemoApps.length === 1 ? "" : "s"} from <strong>{previousDemoBatchRoles.join(", ")}</strong>. Active profile is <strong>{targetRole}</strong>. Old application records are preserved.
+                </span>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              {onClearPreviousDemoData && (
+                <button
+                  type="button"
+                  onClick={onClearPreviousDemoData}
+                  className="px-2.5 py-1.5 rounded bg-white hover:bg-amber-100 border border-amber-300 text-amber-900 font-semibold text-xs transition-colors cursor-pointer"
+                >
+                  Clear Previous Demo Data
+                </button>
+              )}
+              {onLoadRoleSampleData && targetRole && (
+                <button
+                  type="button"
+                  onClick={() => onLoadRoleSampleData(targetRole)}
+                  className="px-2.5 py-1.5 rounded bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs transition-colors cursor-pointer shadow-2xs"
+                >
+                  Load Demo Data for {targetRole}
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
           <div>
             <h3 className="text-sm font-bold text-slate-900 tracking-tight">
               Application &amp; Conversion Pipeline
             </h3>
             <p className="text-xs text-slate-500 mt-0.5">
-              Record submissions and observe response conversion patterns across target role categories.
+              Record submissions and observe response conversion patterns across target role categories {targetRole ? `for ${targetRole}` : ""}.
             </p>
           </div>
 
@@ -352,7 +524,7 @@ export function ApplicationTrackerView({
               onClick={onLoadSampleData}
               className="text-xs px-3 py-1.5 rounded border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 font-medium transition-colors cursor-pointer"
             >
-              Load Demo Data
+              Load Demo Data {targetRole ? `(${targetRole})` : ""}
             </button>
 
             {totalApps > 0 && (
@@ -623,8 +795,22 @@ export function ApplicationTrackerView({
                           {app.company}
                         </span>
                         {app.isSampleData && (
-                          <span className="text-[9px] font-semibold px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 border border-slate-200">
-                            Demo Data
+                          <span
+                            className={`text-[9px] font-semibold px-1.5 py-0.5 rounded border ${
+                              app.sampleBatchRole &&
+                              targetRole &&
+                              app.sampleBatchRole.trim().toLowerCase() !== targetRole.trim().toLowerCase()
+                                ? "bg-amber-50 text-amber-900 border-amber-300"
+                                : "bg-slate-100 text-slate-600 border-slate-200"
+                            }`}
+                          >
+                            {app.sampleBatchRole &&
+                            targetRole &&
+                            app.sampleBatchRole.trim().toLowerCase() !== targetRole.trim().toLowerCase()
+                              ? `Previous Demo (${app.sampleBatchRole})`
+                              : app.sampleBatchRole
+                              ? `Demo (${app.sampleBatchRole})`
+                              : "Demo Data"}
                           </span>
                         )}
                       </div>
