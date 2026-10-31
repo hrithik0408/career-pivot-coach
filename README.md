@@ -86,12 +86,10 @@ Career Pivot Coach is built voice-first to encourage natural, reflective storyte
                                             [Gemini AI Evaluation]
 ```
 
-### How to Use Wispr Flow
-1. Open the [Wispr Flow](https://wisprflow.ai/) desktop application.
-2. Click into any input field in Career Pivot Coach (Target Role, Career Background, Editable Resume, or Mock Interview Response).
-3. Press your configured Wispr Flow desktop dictation shortcut (e.g., `Fn` or your custom shortcut) to speak naturally.
-4. Text is inserted directly into the active field for your review and editing.
-5. In environments without the desktop application, a built-in **Dictate** button provides speech-to-text fallback in supported browsers.
+### Voice Architecture & Dictate Button
+1. **Wispr Flow Desktop App (Recommended)**: An external OS-level application. When you focus any field (Target Role, Career Background, Editable Resume, or Mock Interview Response) and press your global Wispr Flow shortcut, dictation streams directly into the field through native OS input simulation.
+2. **In-Browser Dictate Button**: Uses the browser's native Web Speech API (`webkitSpeechRecognition`) as an in-browser helper. It operates with an isolated lifecycle where clicking **Stop Dictate** immediately ends microphone capture, cancels the recognition session, and discards buffered/late speech tokens.
+3. Both methods are completely independent and can be used separately at any time.
 
 ---
 
